@@ -1,5 +1,6 @@
 package com.forum.discussion_platform.model;
 
+import com.forum.discussion_platform.constants.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -39,6 +40,10 @@ public class User {
 
     @Column(name = "profile_pic")
     private String profilePic;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private UserRole role;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

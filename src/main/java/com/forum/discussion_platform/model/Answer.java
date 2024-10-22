@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "answers")
+@Table(name = "Answers")
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Answer {
@@ -21,20 +21,17 @@ public class Answer {
     private Long answerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "answered_by_id", nullable = false)
     private User answeredBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
+    @JoinColumn(name = "related_question_id", nullable = false)
     private Question relatedQuestion;
 
     @Column(name = "body", nullable = false, columnDefinition = "TEXT")
     private String body;
 
-    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Media> mediaList;
-
-    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "relatedAnswer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     @Column(name = "upvotes", nullable = false)
