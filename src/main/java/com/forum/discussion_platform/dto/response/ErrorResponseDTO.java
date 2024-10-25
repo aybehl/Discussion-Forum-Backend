@@ -2,6 +2,7 @@ package com.forum.discussion_platform.dto;
 
 import com.forum.discussion_platform.constants.ApiStatus;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 
 @Data
 public class ErrorResponseDTO {
@@ -9,9 +10,9 @@ public class ErrorResponseDTO {
     private int statusCode;
     private ErrorDetails error;
 
-    public ErrorResponseDTO(ApiStatus status, int statusCode, String message, String details) {
+    public ErrorResponseDTO(ApiStatus status, HttpStatus statusCode, String message, String details) {
         this.status = status;
-        this.statusCode = statusCode;
+        this.statusCode = statusCode.value();
         this.error = new ErrorDetails(message, details);
     }
 
