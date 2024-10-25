@@ -35,4 +35,11 @@ public class Media {
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    public Media(ContentType contentType, Long contentId, MediaType mediaType, String mediaUrl) {
+        this.contentType = contentType;
+        this.contentId = contentId;
+        this.mediaType = mediaType;
+        this.mediaUrl = mediaUrl;
+    }
 }

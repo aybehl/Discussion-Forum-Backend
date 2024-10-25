@@ -1,6 +1,6 @@
 package com.forum.discussion_platform.model;
 
-import com.forum.discussion_platform.constants.Status;
+import com.forum.discussion_platform.constants.ContentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -42,7 +42,7 @@ public class Answer {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private Status status = Status.ACTIVE;
+    private ContentStatus contentStatus = ContentStatus.ACTIVE;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
