@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class QuestionResponseDTO {
+public class CreateOrEditQuestionResponseDTO {
     private Long questionId;
     private String title;
     private String body;

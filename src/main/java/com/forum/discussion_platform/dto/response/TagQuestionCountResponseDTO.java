@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TagResponseDTO {
+public class TagQuestionCountResponseDTO {
     private Long tagId;
     private String tagName;
-    private String description;
+    private int questionCount;
 }

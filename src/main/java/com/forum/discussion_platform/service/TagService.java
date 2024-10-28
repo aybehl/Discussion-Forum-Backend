@@ -1,6 +1,8 @@
 package com.forum.discussion_platform.service;
 
 import com.forum.discussion_platform.dto.request.EditQuestionRequestDTO;
+import com.forum.discussion_platform.dto.response.TagQuestionCountResponseDTO;
+import com.forum.discussion_platform.dto.response.TagResponseDTO;
 import com.forum.discussion_platform.model.Question;
 import com.forum.discussion_platform.model.Tag;
 import com.forum.discussion_platform.repository.TagRepository;
@@ -15,6 +17,22 @@ public class TagService {
 
     public TagService(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
+    }
+
+    public List<TagResponseDTO> getAllTags(){
+        List<Tag> tagList = tagRepository.findAll();
+
+        return tagList.stream()
+                .map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription()))
+                .collect(Collectors.toList());
+    }
+
+    public List<TagQuestionCountResponseDTO> getAllTagsWithQuestionCount(){
+        List<Object[]> result = tagRepository.findTagsWithQuestionCount();
+
+        return result.stream()
+                .map(row -> new TagQuestionCountResponseDTO((Long) row[0], (String) row[1], (int) row[2]))
+                .collect(Collectors.toList());
     }
 
     public List<Tag> manageTagsForQuestion(List<Long> newTagIds, List<Long> tagIdsToDelete, List<Tag> currentTagList){

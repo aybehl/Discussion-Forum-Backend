@@ -1,6 +1,7 @@
 package com.forum.discussion_platform.util;
 
-import com.forum.discussion_platform.dto.response.QuestionResponseDTO;
+import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
+import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
 import com.forum.discussion_platform.model.Media;
 import com.forum.discussion_platform.model.Question;
 import com.forum.discussion_platform.model.Tag;
@@ -9,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DTOMapper {
-    public static QuestionResponseDTO mapToQuestionResponseDTO(Question question, List<Media> mediaList){
-        QuestionResponseDTO responseDTO = new QuestionResponseDTO();
+    public static CreateOrEditQuestionResponseDTO mapToQuestionResponseDTOWithMedia(Question question, List<Media> mediaList){
+        CreateOrEditQuestionResponseDTO responseDTO = new CreateOrEditQuestionResponseDTO();
         responseDTO.setQuestionId(question.getQuestionId());
         responseDTO.setTitle(question.getTitle());
         responseDTO.setBody(question.getBody());

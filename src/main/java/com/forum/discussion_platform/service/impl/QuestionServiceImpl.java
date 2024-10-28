@@ -3,7 +3,9 @@ package com.forum.discussion_platform.service.impl;
 import com.forum.discussion_platform.constants.GenericConstants;
 import com.forum.discussion_platform.dto.request.EditQuestionRequestDTO;
 import com.forum.discussion_platform.dto.request.QuestionRequestDTO;
-import com.forum.discussion_platform.dto.response.QuestionResponseDTO;
+import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
+import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
+import com.forum.discussion_platform.dto.response.TagResponseDTO;
 import com.forum.discussion_platform.enums.ContentType;
 import com.forum.discussion_platform.exception.ResourceUpdateException;
 import com.forum.discussion_platform.exception.UnauthorizedAccessException;
@@ -20,9 +22,13 @@ import com.forum.discussion_platform.service.TagService;
 import com.forum.discussion_platform.util.DTOMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +57,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public QuestionResponseDTO createQuestion(QuestionRequestDTO requestDTO, List<MultipartFile> mediaFiles, Long authorId) {
+    public CreateOrEditQuestionResponseDTO createQuestion(QuestionRequestDTO requestDTO, List<MultipartFile> mediaFiles, Long authorId) {
         try {
             User author = userRepository.findById(authorId)
                     .orElseThrow(() -> new IllegalArgumentException(GenericConstants.USER_NOT_FOUND));
@@ -67,7 +73,7 @@ public class QuestionServiceImpl implements QuestionService {
             Question savedQuestion = questionRepository.save(question);
 
             List<Media> mediaList = mediaService.processAndSaveMediaFiles(mediaFiles, savedQuestion.getQuestionId(), ContentType.QUESTION);
-            return DTOMapper.mapToQuestionResponseDTO(savedQuestion, mediaList);
+            return DTOMapper.mapToQuestionResponseDTOWithMedia(savedQuestion, mediaList);
         } catch(Exception ex){
             // Rollback transaction if media upload fails
             throw new RuntimeException(ex);
@@ -76,7 +82,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public QuestionResponseDTO updateQuestion(Long questionId, EditQuestionRequestDTO requestDTO, List<MultipartFile> newMediaFiles, Long authorId) {
+    public CreateOrEditQuestionResponseDTO updateQuestion(Long questionId, EditQuestionRequestDTO requestDTO, List<MultipartFile> newMediaFiles, Long authorId) {
         try {
             //Validate the question
             Question question = questionRepository.findById(questionId)
@@ -102,7 +108,7 @@ public class QuestionServiceImpl implements QuestionService {
             Question savedQuestion = questionRepository.save(question);
 
             List<Media> updatedMedia = mediaService.manageMedia(requestDTO.getMediaToDelete(), newMediaFiles, question.getQuestionId(), ContentType.QUESTION);
-            return DTOMapper.mapToQuestionResponseDTO(savedQuestion, updatedMedia);
+            return DTOMapper.mapToQuestionResponseDTOWithMedia(savedQuestion, updatedMedia);
         } catch(Exception ex){
             // Rollback transaction if media upload fails
             throw new ResourceUpdateException(ContentType.QUESTION, questionId, "Failed to update due to an internal error.");
@@ -116,12 +122,45 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> getAllQuestions(int page, int size) {
-        return null;
+    public Page<GetQuestionResponseDTO> getAllQuestionsWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> questionData = questionRepository.findAllQuestionsWithAnswerCount(pageable);
+
+        return questionData.map(data -> {
+            Long questionId = (Long) data[0];
+            String title = (String) data[1];
+            LocalDateTime createdAt = (LocalDateTime) data[2];
+            int upvotes = (int) data[3];
+            int downvotes = (int) data[4];
+            int noOfReplies = ((Number) data[5]).intValue();
+
+            List<TagResponseDTO> tags = tagRepository.findAllTagsForQuestion(questionId)
+                    .stream()
+                    .map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription()))
+                    .collect(Collectors.toList());
+
+            return GetQuestionResponseDTO.builder()
+                    .questionId(questionId)
+                    .title(title)
+                    .tags(tags)
+                    .upvotes(upvotes)
+                    .downvotes(downvotes)
+                    .noOfReplies(noOfReplies)
+                    .createdAt(createdAt)
+                    .build();
+        });
     }
+
 
     @Override
     public void deleteQuestion(Long id) {
 
+    }
+
+    @Override
+    public List<CreateOrEditQuestionResponseDTO> getQuestionsByTags(List<Long> tagsIds) {
+
+
+        return null;
     }
 }
