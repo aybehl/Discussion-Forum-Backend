@@ -1,4 +1,4 @@
-package com.forum.discussion_platform.dto;
+package com.forum.discussion_platform.dto.response;
 
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public class QuestionResponseDTO {
     private String body;
     private Long authorId;
     private List<String> tags;
-    private List<String> mediaList;
+    private List<String> mediaUrls;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -1,7 +1,7 @@
 package com.forum.discussion_platform.model;
 
-import com.forum.discussion_platform.constants.ContentType;
-import com.forum.discussion_platform.constants.VoteType;
+import com.forum.discussion_platform.enums.ContentType;
+import com.forum.discussion_platform.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,6 +1,6 @@
-package com.forum.discussion_platform.dto;
+package com.forum.discussion_platform.dto.response;
 
-import com.forum.discussion_platform.constants.ApiStatus;
+import com.forum.discussion_platform.enums.ApiStatus;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 

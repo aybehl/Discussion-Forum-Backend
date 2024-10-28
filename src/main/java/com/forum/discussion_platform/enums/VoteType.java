@@ -1,4 +1,4 @@
-package com.forum.discussion_platform.constants;
+package com.forum.discussion_platform.enums;
 
 public enum VoteType {
     UPVOTE,

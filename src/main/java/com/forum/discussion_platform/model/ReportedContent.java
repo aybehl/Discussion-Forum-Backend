@@ -1,8 +1,8 @@
 package com.forum.discussion_platform.model;
 
-import com.forum.discussion_platform.constants.ContentType;
-import com.forum.discussion_platform.constants.ReportReason;
-import com.forum.discussion_platform.constants.ReportStatus;
+import com.forum.discussion_platform.enums.ContentType;
+import com.forum.discussion_platform.enums.ReportReason;
+import com.forum.discussion_platform.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;

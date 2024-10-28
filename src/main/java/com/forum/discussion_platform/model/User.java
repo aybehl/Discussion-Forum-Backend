@@ -1,6 +1,6 @@
 package com.forum.discussion_platform.model;
 
-import com.forum.discussion_platform.constants.UserRole;
+import com.forum.discussion_platform.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;

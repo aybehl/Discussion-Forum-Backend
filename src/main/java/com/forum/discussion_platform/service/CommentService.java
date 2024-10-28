@@ -1,2 +1,4 @@
-package com.forum.discussion_platform.service;public class CommentService {
+package com.forum.discussion_platform.service;
+
+public class CommentService {
 }

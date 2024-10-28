@@ -7,9 +7,10 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class QuestionRequestDTO {
+public class EditQuestionRequestDTO {
     private String title;
     private String body;
-    private List<Long> tagIds;
-    private List<String> mediaUrls;
+    private List<Long> tagsToDelete;
+    private List<Long> newTagIds;
+    private List<Long> mediaToDelete;
 }
