@@ -65,9 +65,20 @@ public class QuestionController {
     }
 
     @GetMapping("/tags")
-    public ResponseEntity<SuccessResponseDTO<List<CreateOrEditQuestionResponseDTO>>> getQuestionsByTags(@RequestParam List<Long> tagsIds){
-        List<CreateOrEditQuestionResponseDTO> questions = questionService.getQuestionsByTags(tagsIds);
+    public ResponseEntity<SuccessResponseDTO<Page<GetQuestionResponseDTO>>> getAllQuestionsByTags(
+            @RequestParam List<Long> tagsIds,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Page<GetQuestionResponseDTO> questions = questionService.getAllQuestionsByTags(tagsIds, page, size);
         return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, questions, HttpStatus.OK, GenericConstants.QUESTION_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{questionId}")
+    public ResponseEntity<SuccessResponseDTO> deleteQuestion(@PathVariable Long questionId, @RequestHeader("Authorization") String token){
+
+        Long authorId = tokenService.getUserIdFromToken(token);
+        questionService.deleteQuestion(questionId, authorId);
+        return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, null, HttpStatus.OK, GenericConstants.QUESTION_DELETED_SUCCESSFULLY), HttpStatus.OK);
     }
 
 }

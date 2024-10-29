@@ -54,6 +54,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                .status(ApiStatus.ERROR)
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
         ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()

@@ -13,6 +13,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query("SELECT q.questionId, q.title, q.createdAt, q.upvotes, q.downvotes, COUNT(a) " +
             "FROM Question q " +
             "LEFT JOIN q.answers a " +
+            "WHERE q.isDeleted = false " +
             "GROUP BY q.questionId")
-    Page<Object[]> findAllQuestionsWithAnswerCount(Pageable pageable);
+    Page<Object[]> findQuestionsWithAnswerCount(Pageable pageable);
+
+    @Query("SELECT q.questionId, q.title, q.createdAt, q.upvotes, q.downvotes, " +
+            "(SELECT COUNT(a) FROM Answer a WHERE a.relatedQuestion = q) AS noOfReplies " +
+            "FROM Question q JOIN q.tags t WHERE t.tagId IN :tagIds AND q.isDeleted = false " +
+            "GROUP BY q.questionId")
+    Page<Object[]> findQuestionsWithAnswerCountByTags(@Param("tagIds") List<Long> tagIds, Pageable pageable);
 }

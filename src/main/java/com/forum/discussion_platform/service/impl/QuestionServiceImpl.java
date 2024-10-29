@@ -6,7 +6,9 @@ import com.forum.discussion_platform.dto.request.QuestionRequestDTO;
 import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.TagResponseDTO;
+import com.forum.discussion_platform.enums.ContentStatus;
 import com.forum.discussion_platform.enums.ContentType;
+import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.exception.ResourceUpdateException;
 import com.forum.discussion_platform.exception.UnauthorizedAccessException;
 import com.forum.discussion_platform.model.Media;
@@ -60,7 +62,7 @@ public class QuestionServiceImpl implements QuestionService {
     public CreateOrEditQuestionResponseDTO createQuestion(QuestionRequestDTO requestDTO, List<MultipartFile> mediaFiles, Long authorId) {
         try {
             User author = userRepository.findById(authorId)
-                    .orElseThrow(() -> new IllegalArgumentException(GenericConstants.USER_NOT_FOUND));
+                    .orElseThrow(() -> new UnauthorizedAccessException(GenericConstants.USER_NOT_FOUND));
 
             List<Tag> tags = tagRepository.findAllById(requestDTO.getTagIds());
 
@@ -86,7 +88,7 @@ public class QuestionServiceImpl implements QuestionService {
         try {
             //Validate the question
             Question question = questionRepository.findById(questionId)
-                    .orElseThrow(() -> new IllegalArgumentException(GenericConstants.QUESTION_NOT_FOUND));
+                    .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
 
             // Validate the author
             if (!question.getAuthor().getUserId().equals(authorId)) {
@@ -115,16 +117,10 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
-
-    @Override
-    public Question getQuestion(Long id) {
-        return null;
-    }
-
     @Override
     public Page<GetQuestionResponseDTO> getAllQuestionsWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> questionData = questionRepository.findAllQuestionsWithAnswerCount(pageable);
+        Page<Object[]> questionData = questionRepository.findQuestionsWithAnswerCount(pageable);
 
         return questionData.map(data -> {
             Long questionId = (Long) data[0];
@@ -151,16 +147,56 @@ public class QuestionServiceImpl implements QuestionService {
         });
     }
 
-
     @Override
-    public void deleteQuestion(Long id) {
+    public Page<GetQuestionResponseDTO> getAllQuestionsByTags(List<Long> tagIds, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> questionData = questionRepository.findQuestionsWithAnswerCountByTags(tagIds, pageable);
 
+        return questionData.map(data -> {
+            Long questionId = (Long) data[0];
+            String title = (String) data[1];
+            LocalDateTime createdAt = (LocalDateTime) data[2];
+            int upvotes = (int) data[3];
+            int downvotes = (int) data[4];
+            int noOfReplies = ((Number) data[5]).intValue();
+
+            List<TagResponseDTO> tags = tagRepository.findAllTagsForQuestion(questionId)
+                    .stream()
+                    .map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription()))
+                    .collect(Collectors.toList());
+
+            return GetQuestionResponseDTO.builder()
+                    .questionId(questionId)
+                    .title(title)
+                    .tags(tags)
+                    .upvotes(upvotes)
+                    .downvotes(downvotes)
+                    .noOfReplies(noOfReplies)
+                    .createdAt(createdAt)
+                    .build();
+        });
     }
 
     @Override
-    public List<CreateOrEditQuestionResponseDTO> getQuestionsByTags(List<Long> tagsIds) {
-
-
+    public Question getQuestion(Long id) {
         return null;
+    }
+
+    @Override
+    public void deleteQuestion(Long questionId, Long authorId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
+
+        if (!question.getAuthor().getUserId().equals(authorId)) {
+            throw new UnauthorizedAccessException("You can only delete your own questions.");
+        }
+
+        question.setDeleted(true);
+        question.setDeletedAt(LocalDateTime.now());
+        question.setDeletedBy(authorId);
+        question.setContentStatus(ContentStatus.DELETED);
+        question.setDeletedReason("Deleted by author");
+
+        questionRepository.save(question);
     }
 }

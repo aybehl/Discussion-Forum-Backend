@@ -58,8 +58,8 @@ public class Question {
     @Column(name = "deleted_reason", columnDefinition = "TEXT")
     private String deletedReason;
 
-    @Column(name = "deleted_by_moderator_id")
-    private Long deletedByModeratorId;
+    @Column(name = "deleted_by")
+    private Long deletedBy;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;

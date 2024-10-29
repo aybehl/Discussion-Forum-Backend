@@ -17,7 +17,7 @@ public interface QuestionService {
 
     Page<GetQuestionResponseDTO> getAllQuestionsWithPagination(int page, int size);
 
-    void deleteQuestion(Long id);
+    void deleteQuestion(Long id, Long authorId);
 
-    List<CreateOrEditQuestionResponseDTO> getQuestionsByTags(List<Long> tagsIds);
+    Page<GetQuestionResponseDTO> getAllQuestionsByTags(List<Long> tagsIds, int page, int size);
 }
