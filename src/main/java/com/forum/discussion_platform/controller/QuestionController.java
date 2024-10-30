@@ -61,7 +61,7 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
         Page<GetQuestionResponseDTO> questions = questionService.getAllQuestionsWithPagination(page, size);
-        return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, questions, HttpStatus.OK, GenericConstants.QUESTION_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
+        return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, questions, HttpStatus.OK, GenericConstants.QUESTIONS_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
     }
 
     @GetMapping("/tags")
@@ -70,7 +70,7 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
         Page<GetQuestionResponseDTO> questions = questionService.getAllQuestionsByTags(tagsIds, page, size);
-        return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, questions, HttpStatus.OK, GenericConstants.QUESTION_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
+        return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, questions, HttpStatus.OK, GenericConstants.QUESTIONS_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
     }
 
     @DeleteMapping("/{questionId}")

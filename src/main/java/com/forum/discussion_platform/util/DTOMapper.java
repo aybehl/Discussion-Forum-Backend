@@ -1,7 +1,9 @@
 package com.forum.discussion_platform.util;
 
+import com.forum.discussion_platform.dto.response.AnswerResponseDTO;
 import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
+import com.forum.discussion_platform.model.Answer;
 import com.forum.discussion_platform.model.Media;
 import com.forum.discussion_platform.model.Question;
 import com.forum.discussion_platform.model.Tag;
@@ -22,5 +24,16 @@ public class DTOMapper {
         responseDTO.setMediaUrls(mediaList.stream().map(Media::getMediaUrl).collect(Collectors.toList()));
 
         return responseDTO;
+    }
+
+    public static AnswerResponseDTO mapToAnswerResponseDTO(Answer answer) {
+        return AnswerResponseDTO.builder()
+                .answerId(answer.getAnswerId())
+                .body(answer.getBody())
+                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
+                .authorId(answer.getAnsweredBy().getUserId())
+                .questionId(answer.getRelatedQuestion().getQuestionId())
+                .build();
     }
 }

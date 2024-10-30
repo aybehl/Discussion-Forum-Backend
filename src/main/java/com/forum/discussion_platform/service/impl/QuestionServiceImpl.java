@@ -8,6 +8,7 @@ import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.TagResponseDTO;
 import com.forum.discussion_platform.enums.ContentStatus;
 import com.forum.discussion_platform.enums.ContentType;
+import com.forum.discussion_platform.exception.ContentAlreadyDeleted;
 import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.exception.ResourceUpdateException;
 import com.forum.discussion_platform.exception.UnauthorizedAccessException;
@@ -64,6 +65,10 @@ public class QuestionServiceImpl implements QuestionService {
             User author = userRepository.findById(authorId)
                     .orElseThrow(() -> new UnauthorizedAccessException(GenericConstants.USER_NOT_FOUND));
 
+            if(requestDTO.getTitle() == null || requestDTO.getBody() == null){
+                throw new IllegalArgumentException(GenericConstants.INVALID_CONTENT_FOR_QUESTION);
+            }
+
             List<Tag> tags = tagRepository.findAllById(requestDTO.getTagIds());
 
             Question question = new Question();
@@ -92,7 +97,7 @@ public class QuestionServiceImpl implements QuestionService {
 
             // Validate the author
             if (!question.getAuthor().getUserId().equals(authorId)) {
-                throw new UnauthorizedAccessException("You can only edit your own questions.");
+                throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_QUESTION_UPDATE);
             }
 
             if(requestDTO.getTitle() != null){
@@ -188,7 +193,11 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
 
         if (!question.getAuthor().getUserId().equals(authorId)) {
-            throw new UnauthorizedAccessException("You can only delete your own questions.");
+            throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_QUESTION_DELETE);
+        }
+
+        if(question.isDeleted()){
+            throw new ContentAlreadyDeleted(GenericConstants.QUESTION_ALREADY_DELETED);
         }
 
         question.setDeleted(true);
