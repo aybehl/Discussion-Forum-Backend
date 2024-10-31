@@ -54,4 +54,8 @@ public class GenericConstants {
 
     public static final String VOTE_NOT_FOUND = "Vote not found";
 
+    public static final String REPORT_REASONS_RETRIEVED_SUCCESSFULLY = "Report reasons retrieved successfully";
+
+    public static final String CONTENT_REPORTED_SUCCESSFULLY = "Content reported successfully";
+
 }

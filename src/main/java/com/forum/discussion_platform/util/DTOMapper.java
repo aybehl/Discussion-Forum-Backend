@@ -100,4 +100,17 @@ public class DTOMapper {
                 .userVote(userVote)
                 .build();
     }
+
+    public static ReportedContentResponseDTO mapToReportedContentResponseDTO(ReportedContent reportedContent) {
+        return ReportedContentResponseDTO.builder()
+                .reportId(reportedContent.getReportId())
+                .contentType(reportedContent.getContentType())
+                .contentId(reportedContent.getContentId())
+                .reportedById(reportedContent.getReportedBy().getUserId())
+                .reason(reportedContent.getReason())
+                .additionalComment(reportedContent.getAdditionalComment())
+                .status(reportedContent.getStatus())
+                .createdAt(reportedContent.getCreatedAt())
+                .build();
+    }
 }
