@@ -1,6 +1,7 @@
 package com.forum.discussion_platform.controller;
 
 import com.forum.discussion_platform.dto.request.EditQuestionRequestDTO;
+import com.forum.discussion_platform.dto.response.GetDetailedQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
 import com.forum.discussion_platform.enums.ApiStatus;
 import com.forum.discussion_platform.constants.GenericConstants;
@@ -79,6 +80,16 @@ public class QuestionController {
         Long authorId = tokenService.getUserIdFromToken(token);
         questionService.deleteQuestion(questionId, authorId);
         return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, null, HttpStatus.OK, GenericConstants.QUESTION_DELETED_SUCCESSFULLY), HttpStatus.OK);
+    }
+
+    @GetMapping("/{questionId}")
+    public ResponseEntity<SuccessResponseDTO<GetDetailedQuestionResponseDTO>> getQuestionById(
+            @PathVariable Long questionId,
+            @RequestHeader(value = "userId", required = false) Long userId) {
+
+        GetDetailedQuestionResponseDTO questionDetail = questionService.getQuestionById(questionId, userId);
+        return new ResponseEntity<>(new SuccessResponseDTO<>(
+                ApiStatus.SUCCESS, questionDetail, HttpStatus.OK, GenericConstants.QUESTION_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
     }
 
 }

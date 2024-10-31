@@ -1,9 +1,6 @@
 package com.forum.discussion_platform.util;
 
-import com.forum.discussion_platform.dto.response.AnswerResponseDTO;
-import com.forum.discussion_platform.dto.response.CommentResponseDTO;
-import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
-import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
+import com.forum.discussion_platform.dto.response.*;
 import com.forum.discussion_platform.model.*;
 
 import java.util.List;
@@ -43,6 +40,64 @@ public class DTOMapper {
                 .answerId(comment.getRelatedAnswer().getAnswerId())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
+                .build();
+    }
+
+    public static GetDetailedQuestionResponseDTO mapToDetailedQuestionResponseDTO(Question question, String userVoteType, List<GetDetailedAnswerResponseDTO> answers){
+        return GetDetailedQuestionResponseDTO.builder()
+                .questionId(question.getQuestionId())
+                .title(question.getTitle())
+                .body(question.getBody())
+                .tags(question.getTags().stream()
+                        .map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription()))
+                        .collect(Collectors.toList()))
+                .votes(mapToVoteResponse(question.getUpvotes(), question.getDownvotes(), userVoteType))
+                .answers(answers)
+                .createdAt(question.getCreatedAt())
+                .updatedAt(question.getUpdatedAt())
+                .author(UserResponseDTO.builder()
+                        .userId(question.getAuthor().getUserId())
+                        .username(question.getAuthor().getUserName())
+                        .build())
+                .build();
+    }
+
+    public static GetDetailedAnswerResponseDTO mapToDetailedAnswerResponseDTO(Answer answer, String userVoteType, List<GetDetailedCommentResponseDTO> comments){
+        return GetDetailedAnswerResponseDTO.builder()
+                .answerId(answer.getAnswerId())
+                .body(answer.getBody())
+                .createdAt(answer.getCreatedAt())
+                .author(UserResponseDTO.builder()
+                        .userId(answer.getAnsweredBy().getUserId())
+                        .username(answer.getAnsweredBy().getUserName())
+                        .build())
+                .votes(mapToVoteResponse(answer.getUpvotes(), answer.getDownvotes(), userVoteType))
+                .comments(comments)
+                .isDeleted(answer.isDeleted())
+                .deletedReason(answer.getDeletedReason())
+                .build();
+    }
+
+    public static GetDetailedCommentResponseDTO mapToDetailedCommentResponseDTO(Comment comment, String commentUserVote){
+        return GetDetailedCommentResponseDTO.builder()
+                .commentId(comment.getCommentId())
+                .body(comment.getBody())
+                .createdAt(comment.getCreatedAt())
+                .author(UserResponseDTO.builder()
+                        .userId(comment.getCommentedBy().getUserId())
+                        .username(comment.getCommentedBy().getUserName())
+                        .build())
+                .votes(mapToVoteResponse(comment.getUpvotes(), comment.getDownvotes(), commentUserVote))
+                .isDeleted(comment.isDeleted())
+                .deletedReason(comment.getDeletedReason())
+                .build();
+    }
+
+    private static VoteResponseDTO mapToVoteResponse(int upvotes, int downvotes, String userVote) {
+        return VoteResponseDTO.builder()
+                .upvotes(upvotes)
+                .downvotes(downvotes)
+                .userVote(userVote)
                 .build();
     }
 }

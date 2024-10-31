@@ -3,9 +3,7 @@ package com.forum.discussion_platform.service.impl;
 import com.forum.discussion_platform.constants.GenericConstants;
 import com.forum.discussion_platform.dto.request.EditQuestionRequestDTO;
 import com.forum.discussion_platform.dto.request.QuestionRequestDTO;
-import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
-import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
-import com.forum.discussion_platform.dto.response.TagResponseDTO;
+import com.forum.discussion_platform.dto.response.*;
 import com.forum.discussion_platform.enums.ContentStatus;
 import com.forum.discussion_platform.enums.ContentType;
 import com.forum.discussion_platform.exception.ContentAlreadyDeleted;
@@ -22,8 +20,9 @@ import com.forum.discussion_platform.repository.UserRepository;
 import com.forum.discussion_platform.service.MediaService;
 import com.forum.discussion_platform.service.QuestionService;
 import com.forum.discussion_platform.service.TagService;
+import com.forum.discussion_platform.service.VoteService;
 import com.forum.discussion_platform.util.DTOMapper;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,17 +44,20 @@ public class QuestionServiceImpl implements QuestionService {
     private final MediaService mediaService;
     private final TagService tagService;
 
+    private final VoteService voteService;
+
     @Autowired
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                UserRepository userRepository,
                                TagRepository tagRepository,
                                MediaService mediaService,
-                               TagService tagService){
+                               TagService tagService, VoteService voteService){
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.mediaService = mediaService;
         this.tagService = tagService;
+        this.voteService = voteService;
     }
 
     @Override
@@ -183,11 +185,6 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question getQuestion(Long id) {
-        return null;
-    }
-
-    @Override
     public void deleteQuestion(Long questionId, Long authorId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
@@ -207,5 +204,33 @@ public class QuestionServiceImpl implements QuestionService {
         question.setDeletedReason(GenericConstants.DELETED_BY_AUTHOR);
 
         questionRepository.save(question);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetDetailedQuestionResponseDTO getQuestionById(Long questionId, Long userId) {
+        //Validate the question
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
+
+        // Get vote type for the question
+        String questionUserVote = voteService.getUserVoteType(question.getQuestionId(), userId, ContentType.QUESTION);
+
+        // Prepare answer DTOs with votes and comments
+        List<GetDetailedAnswerResponseDTO> answerResponseDTOs = question.getAnswers().stream().map(answer -> {
+            String answerUserVote = voteService.getUserVoteType(answer.getAnswerId(), userId, ContentType.ANSWER);
+
+            // Prepare comment DTOs with votes
+            List<GetDetailedCommentResponseDTO> commentResponseDTOs = answer.getComments().stream().map(comment -> {
+                String commentUserVote = voteService.getUserVoteType(comment.getCommentId(), userId, ContentType.COMMENT);
+                return DTOMapper.mapToDetailedCommentResponseDTO(comment, commentUserVote);
+            }).collect(Collectors.toList());
+
+            // Map answer, including votes and comments
+            return DTOMapper.mapToDetailedAnswerResponseDTO(answer, answerUserVote, commentResponseDTOs);
+        }).collect(Collectors.toList());
+
+        // Map the question with the answers
+        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, answerResponseDTOs);
     }
 }
