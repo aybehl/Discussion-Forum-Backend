@@ -4,6 +4,7 @@ import com.forum.discussion_platform.constants.GenericConstants;
 import com.forum.discussion_platform.dto.request.AnswerRequestDTO;
 import com.forum.discussion_platform.dto.response.AnswerResponseDTO;
 import com.forum.discussion_platform.enums.ContentStatus;
+import com.forum.discussion_platform.enums.VoteType;
 import com.forum.discussion_platform.exception.ContentAlreadyDeleted;
 import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.exception.UnauthorizedAccessException;
@@ -93,6 +94,19 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setDeletedBy(authorId);
         answer.setContentStatus(ContentStatus.DELETED);
         answer.setDeletedReason(GenericConstants.DELETED_BY_AUTHOR);
+        answerRepository.save(answer);
+    }
+
+    public void updateVoteCount(Long answerId, VoteType voteType, int increment) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new IllegalArgumentException(GenericConstants.ANSWER_NOT_FOUND));
+
+        if (voteType == VoteType.UPVOTE) {
+            answer.setUpvotes(answer.getUpvotes() + increment);
+        } else {
+            answer.setDownvotes(answer.getDownvotes() + increment);
+        }
+
         answerRepository.save(answer);
     }
 }

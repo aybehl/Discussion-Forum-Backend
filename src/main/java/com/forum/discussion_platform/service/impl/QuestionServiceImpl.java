@@ -6,6 +6,7 @@ import com.forum.discussion_platform.dto.request.QuestionRequestDTO;
 import com.forum.discussion_platform.dto.response.*;
 import com.forum.discussion_platform.enums.ContentStatus;
 import com.forum.discussion_platform.enums.ContentType;
+import com.forum.discussion_platform.enums.VoteType;
 import com.forum.discussion_platform.exception.ContentAlreadyDeleted;
 import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.exception.ResourceUpdateException;
@@ -232,5 +233,18 @@ public class QuestionServiceImpl implements QuestionService {
 
         // Map the question with the answers
         return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, answerResponseDTOs);
+    }
+
+    public void updateVoteCount(Long questionId, VoteType voteType, int increment) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException(GenericConstants.QUESTION_NOT_FOUND));
+
+        if (voteType == VoteType.UPVOTE) {
+            question.setUpvotes(question.getUpvotes() + increment);
+        } else {
+            question.setDownvotes(question.getDownvotes() + increment);
+        }
+
+        questionRepository.save(question);
     }
 }

@@ -4,6 +4,7 @@ import com.forum.discussion_platform.constants.GenericConstants;
 import com.forum.discussion_platform.dto.request.CreateCommentRequestDTO;
 import com.forum.discussion_platform.dto.response.CommentResponseDTO;
 import com.forum.discussion_platform.enums.ContentStatus;
+import com.forum.discussion_platform.enums.VoteType;
 import com.forum.discussion_platform.exception.ContentAlreadyDeleted;
 import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.exception.UnauthorizedAccessException;
@@ -57,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.COMMENT_NOT_FOUND));
 
         if (!comment.getCommentedBy().getUserId().equals(authorId)) {
-            throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_QUESTION_UPDATE);
+            throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_COMMENT_UPDATE);
         }
 
         if (comment.isDeleted()) {
@@ -80,7 +81,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.COMMENT_NOT_FOUND));
 
         if (!comment.getCommentedBy().getUserId().equals(authorId)) {
-            throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_QUESTION_UPDATE);
+            throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_COMMENT_DELETE);
         }
 
         if (comment.isDeleted()) {
@@ -92,6 +93,19 @@ public class CommentServiceImpl implements CommentService {
         comment.setContentStatus(ContentStatus.DELETED);
         comment.setDeletedBy(authorId);
         comment.setDeletedReason(GenericConstants.DELETED_BY_AUTHOR);
+
+        commentRepository.save(comment);
+    }
+
+    public void updateVoteCount(Long commentId, VoteType voteType, int increment) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException(GenericConstants.COMMENT_NOT_FOUND));
+
+        if (voteType == VoteType.UPVOTE) {
+            comment.setUpvotes(comment.getUpvotes() + increment);
+        } else {
+            comment.setDownvotes(comment.getDownvotes() + increment);
+        }
 
         commentRepository.save(comment);
     }

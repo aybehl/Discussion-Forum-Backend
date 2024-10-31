@@ -2,6 +2,9 @@ package com.forum.discussion_platform.constants;
 
 public class GenericConstants {
     public static final String USER_NOT_FOUND = "User not found";
+
+    public static final String USER_DETAILS_MISMATCH = "User data mismatch";
+
     public static final String QUESTION_NOT_FOUND = "Question not found";
     public static final String ANSWER_NOT_FOUND = "Answer not found";
     public static final String COMMENT_NOT_FOUND = "Comment not found";
@@ -42,4 +45,13 @@ public class GenericConstants {
     public static final String QUESTION_ALREADY_DELETED = "Question has already been deleted";
 
     public static final String DELETED_BY_AUTHOR = "Deleted by author";
+
+    public static final String VOTE_REGISTERED_SUCCESSFULLY = "Vote registered successfully";
+
+    public static final String VOTE_UNREGISTERED_SUCCESSFULLY = "Vote unregistered successfully";
+
+    public static final String VOTE_ALREADY_EXISTS = "Vote already exists";
+
+    public static final String VOTE_NOT_FOUND = "Vote not found";
+
 }

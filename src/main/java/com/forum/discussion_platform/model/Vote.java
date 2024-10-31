@@ -3,6 +3,7 @@ package com.forum.discussion_platform.model;
 import com.forum.discussion_platform.enums.ContentType;
 import com.forum.discussion_platform.enums.VoteType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Votes")
 @Data
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Vote {
     @Id

@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     @Query("SELECT v.voteType FROM Vote v WHERE v.contentId = :contentId AND v.votedBy.userId = :userId AND v.contentType = :contentType")
     Optional<String> findUserVoteType(@Param("contentId") Long contentId, @Param("userId") Long userId, @Param("contentType") ContentType contentType);
+
+    Optional<Vote> findByVotedBy_UserIdAndContentIdAndContentType(Long votedByUserId, Long contentId, ContentType contentType);
+
 }
