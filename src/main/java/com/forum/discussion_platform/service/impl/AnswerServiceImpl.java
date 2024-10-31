@@ -61,6 +61,10 @@ public class AnswerServiceImpl implements AnswerService {
             throw new UnauthorizedAccessException(GenericConstants.UNAUTHORISED_ANSWER_UPDATE);
         }
 
+        if(answer.isDeleted()){
+            throw new ContentAlreadyDeleted(GenericConstants.ANSWER_ALREADY_DELETED);
+        }
+
         if (newBody != null && newBody.length() > 0) {
             answer.setBody(newBody);
         } else {
@@ -88,7 +92,7 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setDeletedAt(LocalDateTime.now());
         answer.setDeletedBy(authorId);
         answer.setContentStatus(ContentStatus.DELETED);
-        answer.setDeletedReason("Deleted by author");
+        answer.setDeletedReason(GenericConstants.DELETED_BY_AUTHOR);
         answerRepository.save(answer);
     }
 }

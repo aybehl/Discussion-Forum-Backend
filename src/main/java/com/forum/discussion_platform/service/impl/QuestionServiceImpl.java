@@ -204,7 +204,7 @@ public class QuestionServiceImpl implements QuestionService {
         question.setDeletedAt(LocalDateTime.now());
         question.setDeletedBy(authorId);
         question.setContentStatus(ContentStatus.DELETED);
-        question.setDeletedReason("Deleted by author");
+        question.setDeletedReason(GenericConstants.DELETED_BY_AUTHOR);
 
         questionRepository.save(question);
     }

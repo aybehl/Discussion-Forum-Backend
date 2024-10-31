@@ -1,12 +1,10 @@
 package com.forum.discussion_platform.util;
 
 import com.forum.discussion_platform.dto.response.AnswerResponseDTO;
+import com.forum.discussion_platform.dto.response.CommentResponseDTO;
 import com.forum.discussion_platform.dto.response.CreateOrEditQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
-import com.forum.discussion_platform.model.Answer;
-import com.forum.discussion_platform.model.Media;
-import com.forum.discussion_platform.model.Question;
-import com.forum.discussion_platform.model.Tag;
+import com.forum.discussion_platform.model.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +32,17 @@ public class DTOMapper {
                 .updatedAt(answer.getUpdatedAt())
                 .authorId(answer.getAnsweredBy().getUserId())
                 .questionId(answer.getRelatedQuestion().getQuestionId())
+                .build();
+    }
+
+    public static CommentResponseDTO mapToCommentResponseDTO(Comment comment) {
+        return CommentResponseDTO.builder()
+                .commentId(comment.getCommentId())
+                .content(comment.getBody())
+                .authorId(comment.getCommentedBy().getUserId())
+                .answerId(comment.getRelatedAnswer().getAnswerId())
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
                 .build();
     }
 }
