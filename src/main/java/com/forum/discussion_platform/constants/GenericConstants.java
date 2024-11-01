@@ -58,4 +58,16 @@ public class GenericConstants {
 
     public static final String CONTENT_REPORTED_SUCCESSFULLY = "Content reported successfully";
 
+    public static final String REPORTED_CONTENT_RETRIEVED_SUCCESSFULLY = "Reported content retrieved successfully";
+
+    public static final String RESOURCE_ACCESS_ONLY_FOR_MODERATOR = "Resource access only allowed for moderator";
+
+    public static final String REPORT_VERIFIED_SUCCESSFULLY = "Reported Content verified successfully";
+
+    public static final String REPORT_DISMISSED_SUCCESSFULLY = "Reported Content dismissed successfully";
+
+    public static final String REPORTED_CONTENT_NOT_FOUND = "Reported Content not found";
+
+    public static final String REASON_REQUIRED_FOR_VERIFICATION = "Reason required for verifying reported content";
+
 }

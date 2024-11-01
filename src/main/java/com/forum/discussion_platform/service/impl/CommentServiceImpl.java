@@ -10,6 +10,7 @@ import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.exception.UnauthorizedAccessException;
 import com.forum.discussion_platform.model.Answer;
 import com.forum.discussion_platform.model.Comment;
+import com.forum.discussion_platform.model.Question;
 import com.forum.discussion_platform.model.User;
 import com.forum.discussion_platform.repository.AnswerRepository;
 import com.forum.discussion_platform.repository.CommentRepository;
@@ -106,6 +107,28 @@ public class CommentServiceImpl implements CommentService {
         } else {
             comment.setDownvotes(comment.getDownvotes() + increment);
         }
+
+        commentRepository.save(comment);
+    }
+
+    @Override
+    public String getCommentContent(Long contentId) {
+        Comment comment = commentRepository.findById(contentId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.COMMENT_NOT_FOUND));
+
+        return comment.getBody();
+    }
+
+    @Override
+    public void softDeleteComment(Long contentId, String deletedReason, Long moderatorId) {
+        Comment comment = commentRepository.findById(contentId)
+                .orElseThrow(() -> new IllegalArgumentException(GenericConstants.COMMENT_NOT_FOUND));
+
+        comment.setDeleted(true);
+        comment.setDeletedAt(LocalDateTime.now());
+        comment.setContentStatus(ContentStatus.DELETED);
+        comment.setDeletedBy(moderatorId);
+        comment.setDeletedReason(deletedReason);
 
         commentRepository.save(comment);
     }

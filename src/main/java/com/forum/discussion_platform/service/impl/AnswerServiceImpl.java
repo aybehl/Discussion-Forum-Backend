@@ -109,4 +109,25 @@ public class AnswerServiceImpl implements AnswerService {
 
         answerRepository.save(answer);
     }
+
+    @Override
+    public String getAnswerContent(Long contentId) {
+        Answer answer = answerRepository.findById(contentId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.ANSWER_NOT_FOUND));
+
+        return answer.getBody();
+    }
+
+    @Override
+    public void softDeleteAnswer(Long answerId, String deletedReason, Long moderatorId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new IllegalArgumentException(GenericConstants.ANSWER_NOT_FOUND));
+
+        answer.setDeleted(true);
+        answer.setDeletedAt(LocalDateTime.now());
+        answer.setDeletedBy(moderatorId);
+        answer.setContentStatus(ContentStatus.DELETED);
+        answer.setDeletedReason(deletedReason);
+        answerRepository.save(answer);
+    }
 }

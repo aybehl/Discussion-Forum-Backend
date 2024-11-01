@@ -25,4 +25,8 @@ public interface QuestionService {
     GetDetailedQuestionResponseDTO getQuestionById(Long questionId, Long userId);
 
     void updateVoteCount(Long contentId, VoteType voteType, int increment);
+
+    String getQuestionContent(Long contentId);
+
+    void softDeleteQuestion(Long contentId, String reason, Long moderatorId);
 }

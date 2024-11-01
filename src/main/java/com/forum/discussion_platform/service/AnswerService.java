@@ -10,4 +10,8 @@ public interface AnswerService {
     void deleteAnswer(Long answerId, Long authorId);
 
     void updateVoteCount(Long contentId, VoteType voteType, int increment);
+
+    String getAnswerContent(Long contentId);
+
+    void softDeleteAnswer(Long contentId, String deletedReason, Long moderatorId);
 }

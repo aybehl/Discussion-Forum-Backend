@@ -10,4 +10,8 @@ public interface CommentService {
     void deleteComment(Long commentId, Long authorId);
 
     void updateVoteCount(Long contentId, VoteType voteType, int increment);
+
+    String getCommentContent(Long contentId);
+
+    void softDeleteComment(Long contentId, String deletedReason, Long moderatorId);
 }

@@ -247,4 +247,25 @@ public class QuestionServiceImpl implements QuestionService {
 
         questionRepository.save(question);
     }
+
+    @Override
+    public String getQuestionContent(Long contentId) {
+        Question question = questionRepository.findById(contentId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
+
+        return question.getBody();
+    }
+
+    @Override
+    public void softDeleteQuestion(Long questionId, String deletedReason, Long moderatorId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.QUESTION_NOT_FOUND));
+
+        question.setDeleted(true);
+        question.setDeletedAt(LocalDateTime.now());
+        question.setDeletedBy(moderatorId);
+        question.setContentStatus(ContentStatus.DELETED);
+
+        questionRepository.save(question);
+    }
 }
