@@ -33,4 +33,18 @@ public class AuthController {
                 GenericConstants.USER_REGISTRATION_SUCCESSFUL),
                 HttpStatus.CREATED);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<SuccessResponseDTO<AuthResponseDTO>> login(@RequestBody AuthRequestDTO request) {
+        AuthResponseDTO response = authService.login(request);
+        return new ResponseEntity<>(new SuccessResponseDTO<>(
+                ApiStatus.SUCCESS,
+                response,
+                HttpStatus.OK,
+                GenericConstants.USER_LOGIN_SUCCESSFUL),
+                HttpStatus.OK);
+    }
+
+
+
 }
