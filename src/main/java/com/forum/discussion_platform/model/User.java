@@ -2,6 +2,7 @@ package com.forum.discussion_platform.model;
 
 import com.forum.discussion_platform.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "Users")
 @Data
 @EntityListeners(AuditingEntityListener.class)
+@Builder
 public class User {
 
     @Id

@@ -2,7 +2,8 @@ package com.forum.discussion_platform.constants;
 
 public class GenericConstants {
     public static final String USER_NOT_FOUND = "User not found";
-
+    public static final String USER_REGISTRATION_SUCCESSFUL = "User registration successful";
+    public static final String EMAIL_ALREADY_IN_USE = "Email already in use";
     public static final String USER_DETAILS_MISMATCH = "User data mismatch";
 
     public static final String QUESTION_NOT_FOUND = "Question not found";
