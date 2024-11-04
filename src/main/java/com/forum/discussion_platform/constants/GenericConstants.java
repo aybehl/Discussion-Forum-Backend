@@ -7,6 +7,14 @@ public class GenericConstants {
     public static final String USER_REGISTRATION_SUCCESSFUL = "User registration successful";
     public static final String USER_LOGIN_SUCCESSFUL = "User login successful";
 
+    public static final String USER_PROFILE_FETCHED_SUCCESSFULLY = "User profile fetched successfully";
+
+    public static final String USER_PROFILE_UPDATED_SUCCESSFULLY = "User profile updated successfully";
+
+    public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully";
+
+    public static final String UNAUTHORISED_DELETE_USER_ACTION = "Unauthorised delete user action";
+
     public static final String INVALID_PASSWORD = "Invalid password";
     public static final String EMAIL_ALREADY_IN_USE = "Email already in use";
     public static final String USER_DETAILS_MISMATCH = "User data mismatch";
@@ -30,7 +38,8 @@ public class GenericConstants {
     public static final String COMMENT_UPDATED_SUCCESSFULLY = "Comment updated successfully";
     public static final String COMMENT_DELETED_SUCCESSFULLY = "Comment deleted successfully";
 
-    public static final String MEDIA_UPLOAD_ERROR = "Failed to upload media, transaction rolled back.";
+    public static final String MEDIA_UPLOAD_ERROR = "Failed to upload media to cloudinary, transaction rolled back.";
+    public static final String MEDIA_DELETE_ERROR = "Failed to delete media from cloudinary, transaction rolled back.";
     public static final String TAGS_FETCHED_SUCCESSFULLY = "Tags fetched successfully";
 
     public static final String UNAUTHORISED_QUESTION_DELETE = "You can only delete your own questions";

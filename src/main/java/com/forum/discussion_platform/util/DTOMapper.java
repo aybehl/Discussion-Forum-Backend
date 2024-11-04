@@ -113,4 +113,16 @@ public class DTOMapper {
                 .createdAt(reportedContent.getCreatedAt())
                 .build();
     }
+
+    public static UserProfileResponseDTO mapToUserProfileDTO(User user){
+        return UserProfileResponseDTO.builder()
+                .userName(user.getUserName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .bio(user.getBio())
+                .email(user.getEmail())
+                .profilePic(user.getProfilePic())
+                .joinedAt(user.getCreatedAt())
+                .build();
+    }
 }

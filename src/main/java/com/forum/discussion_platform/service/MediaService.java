@@ -3,7 +3,6 @@ package com.forum.discussion_platform.service;
 import com.forum.discussion_platform.enums.ContentType;
 import com.forum.discussion_platform.enums.MediaType;
 import com.forum.discussion_platform.model.Media;
-import com.forum.discussion_platform.model.Question;
 import com.forum.discussion_platform.repository.MediaRepository;
 import com.forum.discussion_platform.util.ListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class MediaService {
@@ -54,5 +53,16 @@ public class MediaService {
 
         //Merge the two Lists
         return ListUtil.mergeLists(newMediaList, existingMediaList);
+    }
+
+    public Optional<List<Media>> findByContentIdAndType(Long contentId, ContentType contentType) {
+        return Optional.ofNullable(mediaRepository.findByContentIdAndContentType(contentId, contentType));
+    }
+
+    public void deleteMedia(List<Media> mediaList) {
+        for(Media media: mediaList){
+            cloudinaryService.deleteFile(media.getMediaUrl());
+            mediaRepository.delete(media);
+        }
     }
 }

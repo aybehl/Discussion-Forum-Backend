@@ -3,5 +3,6 @@ package com.forum.discussion_platform.enums;
 public enum ContentType {
     QUESTION,
     ANSWER,
-    COMMENT
+    COMMENT,
+    USER_PROFILE
 }

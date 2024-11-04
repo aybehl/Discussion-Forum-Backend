@@ -24,4 +24,22 @@ public class CloudinaryService {
             throw new RuntimeException(GenericConstants.MEDIA_UPLOAD_ERROR, e);
         }
     }
+
+    public void deleteFile(String fileUrl) {
+        try {
+            // Extract public ID from URL to delete the file
+            String publicId = extractPublicIdFromUrl(fileUrl);
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (IOException e) {
+            throw new RuntimeException(GenericConstants.MEDIA_DELETE_ERROR, e);
+        }
+    }
+
+    private String extractPublicIdFromUrl(String fileUrl) {
+        // Cloudinary URL format: "https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}.{extension}"
+        // Assuming public_id is the part after the last "/" and before the file extension
+        String[] parts = fileUrl.split("/");
+        String publicIdWithExtension = parts[parts.length - 1];
+        return publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf('.'));
+    }
 }
