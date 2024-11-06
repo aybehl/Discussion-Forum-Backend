@@ -44,70 +44,71 @@ public class VoteService {
     }
 
     @Transactional
-    public void createVote(VoteRequestDTO request, Long authorId) {
-        try {
-            // Validate the author
-            User user = userRepository.findById(authorId)
-                    .orElseThrow(() ->  new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
+    public void createOrToggleVote(VoteRequestDTO request, Long authorId) {
+        // Validate the author
+        User user = userRepository.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
 
-            // Validate the author
-            if (!request.getVotedById().equals(authorId)) {
-                throw new IllegalArgumentException(GenericConstants.USER_DETAILS_MISMATCH);
+        // Validate the author in the request
+        if (!request.getVotedById().equals(authorId)) {
+            throw new IllegalArgumentException(GenericConstants.USER_DETAILS_MISMATCH);
+        }
+
+        // Check if a vote already exists for this content by this user
+        Optional<Vote> existingVoteOpt = voteRepository.findByVotedBy_UserIdAndContentIdAndContentType(
+                request.getVotedById(), request.getContentId(), request.getContentType());
+
+        if (existingVoteOpt.isPresent()) {
+            Vote existingVote = existingVoteOpt.get();
+
+            if (existingVote.getVoteType().equals(request.getVoteType())) {
+                // Case: The same vote type exists (e.g., upvote after an upvote) - Undo the vote
+                undoVote(existingVote);
+            } else {
+                // Case: Opposite vote exists (e.g., upvote to downvote) - Switch vote type
+                updateVoteCount(request, 1); // Increase count for new vote type
+                VoteRequestDTO oppositeVoteRequest = VoteRequestDTO.builder()
+                        .votedById(existingVote.getVotedBy().getUserId())
+                        .contentId(existingVote.getContentId())
+                        .contentType(existingVote.getContentType())
+                        .voteType(existingVote.getVoteType())
+                        .build();
+                updateVoteCount(oppositeVoteRequest, -1); // Decrease count for old vote type
+                existingVote.setVoteType(request.getVoteType()); // Update to new vote type
+                voteRepository.save(existingVote);
             }
-
-            // Check if vote already exists
-            Optional<Vote> existingVote = voteRepository.findByVotedBy_UserIdAndContentIdAndContentType(
-                    request.getVotedById(), request.getContentId(), request.getContentType()
-            );
-
-            if (existingVote.isPresent()) {
-                throw new IllegalStateException(GenericConstants.VOTE_ALREADY_EXISTS);
-            }
-
-            // Update the vote count in the related entity
-            updateVoteCount(request, 1);
-
-            // Create and save the new vote
-            Vote vote = Vote.builder()
+        } else {
+            // Case: No existing vote - Create a new vote
+            updateVoteCount(request, 1); // Increase the new vote count
+            Vote newVote = Vote.builder()
                     .votedBy(user)
                     .voteType(request.getVoteType())
                     .contentId(request.getContentId())
                     .contentType(request.getContentType())
                     .build();
-
-            voteRepository.save(vote);
-        } catch(Exception ex){
-            throw new RuntimeException(ex);
+            voteRepository.save(newVote);
         }
     }
 
     @Transactional
-    public void undoVote(VoteRequestDTO request, Long authorId) {
+    private void undoVote(Vote existingVote) {
         try {
-            // Validate the author
-            User user = userRepository.findById(authorId)
-                    .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
+            VoteRequestDTO request = VoteRequestDTO.builder()
+                    .votedById(existingVote.getVotedBy().getUserId())
+                    .contentId(existingVote.getContentId())
+                    .contentType(existingVote.getContentType())
+                    .voteType(existingVote.getVoteType())
+                    .build();
 
-            // Validate the author in request
-            if (!request.getVotedById().equals(authorId)) {
-                throw new IllegalArgumentException(GenericConstants.USER_DETAILS_MISMATCH);
-            }
-
-            // Check if vote exists
-            Vote existingVote = voteRepository.findByVotedBy_UserIdAndContentIdAndContentType(
-                    request.getVotedById(), request.getContentId(), request.getContentType()
-            ).orElseThrow(() -> new ResourceNotFoundException(GenericConstants.VOTE_NOT_FOUND));
-
-            // Update the vote count in the related entity
+            // Decrease the vote count in the related entity
             updateVoteCount(request, -1);
 
-            // Delete the vote
+            // Delete the vote record
             voteRepository.delete(existingVote);
-        } catch(Exception ex) {
-            throw new RuntimeException(ex);
+        } catch (Exception ex) {
+            throw new RuntimeException(GenericConstants.UNDO_VOTE_FAILED, ex);
         }
     }
-
 
     private void updateVoteCount(VoteRequestDTO request, int increment) {
         switch (request.getContentType()) {

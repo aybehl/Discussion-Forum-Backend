@@ -34,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
     }
     @Override
     public CommentResponseDTO createComment(CreateCommentRequestDTO requestDTO, Long authorId) {
-        User author = userRepository.findById(requestDTO.getAuthorId())
+        User author = userRepository.findById(authorId)
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
 
         Answer answer = answerRepository.findById(requestDTO.getAnswerId())
@@ -68,12 +68,11 @@ public class CommentServiceImpl implements CommentService {
 
         if (newBody != null && !newBody.isEmpty()) {
             comment.setBody(newBody);
+            Comment updatedComment = commentRepository.save(comment);
+            return DTOMapper.mapToCommentResponseDTO(updatedComment);
         } else {
             throw new IllegalArgumentException(GenericConstants.INVALID_CONTENT_FOR_COMMENT);
         }
-
-        Comment updatedComment = commentRepository.save(comment);
-        return DTOMapper.mapToCommentResponseDTO(updatedComment);
     }
 
     @Override

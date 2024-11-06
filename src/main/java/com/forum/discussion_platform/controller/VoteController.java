@@ -25,12 +25,12 @@ public class VoteController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<SuccessResponseDTO<String>> createVote(
+    @PostMapping()
+    public ResponseEntity<SuccessResponseDTO<String>> createOrToggleVote(
             @RequestBody VoteRequestDTO voteRequest, @RequestHeader("Authorization") String token) {
         Long authorId = tokenService.getUserIdFromToken(token);
 
-        voteService.createVote(voteRequest, authorId);
+        voteService.createOrToggleVote(voteRequest, authorId);
         return ResponseEntity.ok(new SuccessResponseDTO<>(
                 ApiStatus.SUCCESS,
                 null,
@@ -38,16 +38,16 @@ public class VoteController {
                 GenericConstants.VOTE_REGISTERED_SUCCESSFULLY));
     }
 
-    @DeleteMapping("/undo")
-    public ResponseEntity<SuccessResponseDTO<String>> undoVote(
-            @RequestBody VoteRequestDTO voteRequest, @RequestHeader("Authorization") String token) {
-        Long authorId = tokenService.getUserIdFromToken(token);
-
-        voteService.undoVote(voteRequest, authorId);
-        return ResponseEntity.ok(new SuccessResponseDTO<>(
-                ApiStatus.SUCCESS,
-                null,
-                HttpStatus.OK,
-                GenericConstants.VOTE_UNREGISTERED_SUCCESSFULLY));
-    }
+//    @DeleteMapping("/undo")
+//    public ResponseEntity<SuccessResponseDTO<String>> undoVote(
+//            @RequestBody VoteRequestDTO voteRequest, @RequestHeader("Authorization") String token) {
+//        Long authorId = tokenService.getUserIdFromToken(token);
+//
+//        voteService.undoVote(voteRequest, authorId);
+//        return ResponseEntity.ok(new SuccessResponseDTO<>(
+//                ApiStatus.SUCCESS,
+//                null,
+//                HttpStatus.OK,
+//                GenericConstants.VOTE_UNREGISTERED_SUCCESSFULLY));
+//    }
 }

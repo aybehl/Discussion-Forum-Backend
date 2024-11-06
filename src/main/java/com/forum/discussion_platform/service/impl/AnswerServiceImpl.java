@@ -68,12 +68,11 @@ public class AnswerServiceImpl implements AnswerService {
 
         if (newBody != null && newBody.length() > 0) {
             answer.setBody(newBody);
+            Answer updatedAnswer = answerRepository.save(answer);
+            return DTOMapper.mapToAnswerResponseDTO(updatedAnswer);
         } else {
             throw new IllegalArgumentException(GenericConstants.INVALID_CONTENT_FOR_ANSWER);
         }
-
-        Answer updatedAnswer = answerRepository.save(answer);
-        return DTOMapper.mapToAnswerResponseDTO(updatedAnswer);
     }
 
     @Override

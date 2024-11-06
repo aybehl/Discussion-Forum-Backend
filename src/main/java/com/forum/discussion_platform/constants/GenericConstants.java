@@ -63,11 +63,7 @@ public class GenericConstants {
 
     public static final String VOTE_REGISTERED_SUCCESSFULLY = "Vote registered successfully";
 
-    public static final String VOTE_UNREGISTERED_SUCCESSFULLY = "Vote unregistered successfully";
-
-    public static final String VOTE_ALREADY_EXISTS = "Vote already exists";
-
-    public static final String VOTE_NOT_FOUND = "Vote not found";
+    public static final String UNDO_VOTE_FAILED = "Undo vote failed";
 
     public static final String REPORT_REASONS_RETRIEVED_SUCCESSFULLY = "Report reasons retrieved successfully";
 
