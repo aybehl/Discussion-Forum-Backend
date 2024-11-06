@@ -3,7 +3,9 @@ package com.forum.discussion_platform.util;
 import com.forum.discussion_platform.dto.response.*;
 import com.forum.discussion_platform.model.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DTOMapper {
@@ -12,13 +14,16 @@ public class DTOMapper {
         responseDTO.setQuestionId(question.getQuestionId());
         responseDTO.setTitle(question.getTitle());
         responseDTO.setBody(question.getBody());
-        responseDTO.setTags(question.getTags().stream().map(Tag::getName).collect(Collectors.toList()));
+        responseDTO.setTags(question.getTags()
+                .stream().map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription())).collect(Collectors.toList()));
         responseDTO.setAuthorId(question.getAuthor().getUserId());
         responseDTO.setCreatedAt(question.getCreatedAt());
         responseDTO.setUpdatedAt(question.getUpdatedAt());
 
         if(mediaList != null){
-            responseDTO.setMediaUrls(mediaList.stream().map(Media::getMediaUrl).collect(Collectors.toList()));
+            responseDTO.setMedia(mediaList.stream()
+                    .map(media -> new MediaResponseDTO(media.getMediaId(), media.getMediaUrl()))
+                    .collect(Collectors.toList()));
         }
 
         return responseDTO;
@@ -46,7 +51,7 @@ public class DTOMapper {
                 .build();
     }
 
-    public static GetDetailedQuestionResponseDTO mapToDetailedQuestionResponseDTO(Question question, String userVoteType, List<GetDetailedAnswerResponseDTO> answers){
+    public static GetDetailedQuestionResponseDTO mapToDetailedQuestionResponseDTO(Question question, String userVoteType, Optional<List<Media>> mediaList, List<GetDetailedAnswerResponseDTO> answers){
         return GetDetailedQuestionResponseDTO.builder()
                 .questionId(question.getQuestionId())
                 .title(question.getTitle())
@@ -55,6 +60,11 @@ public class DTOMapper {
                         .map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription()))
                         .collect(Collectors.toList()))
                 .votes(mapToVoteResponse(question.getUpvotes(), question.getDownvotes(), userVoteType))
+                .media(mediaList.orElse(Collections.emptyList()).stream()
+                        .map(media -> new MediaResponseDTO(
+                                media.getMediaId(),
+                                media.getMediaUrl()))
+                        .collect(Collectors.toList()))
                 .answers(answers)
                 .createdAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())

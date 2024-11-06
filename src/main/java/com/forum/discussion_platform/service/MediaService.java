@@ -55,10 +55,11 @@ public class MediaService {
         List<Media> newMediaList = null;
         if(newMediaFiles != null && newMediaFiles.size() > 0){
             newMediaList = processAndSaveMediaFiles(newMediaFiles, contentId, contentType);
+            return ListUtil.mergeLists(newMediaList, existingMediaList);
         }
 
         //Merge the two Lists
-        return ListUtil.mergeLists(newMediaList, existingMediaList);
+        return existingMediaList;
     }
 
     public Optional<List<Media>> findByContentIdAndType(Long contentId, ContentType contentType) {

@@ -47,7 +47,7 @@ public class QuestionController {
     @PutMapping("/{questionId}")
     public ResponseEntity<SuccessResponseDTO<CreateOrEditQuestionResponseDTO>> updateQuestion(
             @PathVariable Long questionId,
-            @RequestPart("data") EditQuestionRequestDTO requestDTO,
+            @RequestPart(value = "data", required = false) EditQuestionRequestDTO requestDTO,
             @RequestPart(value = "newMediaFiles", required = false) List<MultipartFile> newMediaFiles,
             @RequestHeader("Authorization") String token) {
 
@@ -67,10 +67,10 @@ public class QuestionController {
 
     @GetMapping("/tags")
     public ResponseEntity<SuccessResponseDTO<Page<GetQuestionResponseDTO>>> getAllQuestionsByTags(
-            @RequestParam List<Long> tagsIds,
+            @RequestParam List<Long> tagIds,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
-        Page<GetQuestionResponseDTO> questions = questionService.getAllQuestionsByTags(tagsIds, page, size);
+        Page<GetQuestionResponseDTO> questions = questionService.getAllQuestionsByTags(tagIds, page, size);
         return new ResponseEntity<>(new SuccessResponseDTO<>(ApiStatus.SUCCESS, questions, HttpStatus.OK, GenericConstants.QUESTIONS_RETRIEVED_SUCCESSFULLY), HttpStatus.OK);
     }
 

@@ -13,6 +13,7 @@ public class GetDetailedQuestionResponseDTO {
     private String title;
     private String body;
     private List<TagResponseDTO> tags;
+    private List<MediaResponseDTO> media;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UserResponseDTO author;

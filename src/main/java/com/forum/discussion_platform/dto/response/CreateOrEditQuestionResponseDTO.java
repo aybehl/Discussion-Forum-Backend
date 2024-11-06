@@ -10,8 +10,8 @@ public class CreateOrEditQuestionResponseDTO {
     private String title;
     private String body;
     private Long authorId;
-    private List<String> tags;
-    private List<String> mediaUrls;
+    private List<TagResponseDTO> tags;
+    private List<MediaResponseDTO> media;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

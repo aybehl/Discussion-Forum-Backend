@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,14 +122,16 @@ public class QuestionServiceImpl implements QuestionService {
                     question.getTags()
             ));
 
-            //Clear existing tag associations
-            question.getTags().clear();
-            questionRepository.save(question);
+            if(tagService.checkIfTagsUpdated(question.getTags(), updatedTags)){
+                //Clear existing tag associations
+                question.getTags().clear();
+                questionRepository.save(question);
 
-            //Add new tag associations
-            question.setTags(updatedTags);
+                //Add new tag associations
+                question.setTags(updatedTags);
+            }
+
             Question savedQuestion = questionRepository.save(question);
-
 
             List<Media> updatedMedia = mediaService.manageMedia(requestDTO.getMediaToDelete(), newMediaFiles, question.getQuestionId(), ContentType.QUESTION);
             return DTOMapper.mapToQuestionResponseDTOWithMedia(savedQuestion, updatedMedia);
@@ -230,6 +233,8 @@ public class QuestionServiceImpl implements QuestionService {
         // Get vote type for the question
         String questionUserVote = voteService.getUserVoteType(question.getQuestionId(), userId, ContentType.QUESTION);
 
+        Optional<List<Media>> mediaList = mediaService.findByContentIdAndType(questionId, ContentType.QUESTION);
+
         // Prepare answer DTOs with votes and comments
         List<GetDetailedAnswerResponseDTO> answerResponseDTOs = question.getAnswers().stream().map(answer -> {
             String answerUserVote = voteService.getUserVoteType(answer.getAnswerId(), userId, ContentType.ANSWER);
@@ -245,7 +250,7 @@ public class QuestionServiceImpl implements QuestionService {
         }).collect(Collectors.toList());
 
         // Map the question with the answers
-        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, answerResponseDTOs);
+        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, mediaList, answerResponseDTOs);
     }
 
     public void updateVoteCount(Long questionId, VoteType voteType, int increment) {
