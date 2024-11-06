@@ -21,6 +21,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ContentAlreadyModeratedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleContentAlreadyModerated(ContentAlreadyModeratedException ex){
+        ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                .status(ApiStatus.ERROR)
+                .statusCode(HttpStatus.CONFLICT.value())
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ContentAlreadyDeleted.class)
     public ResponseEntity<ErrorResponseDTO> ContentAlreadyDeleted(ContentAlreadyDeleted ex){
         ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()

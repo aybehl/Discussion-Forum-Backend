@@ -64,9 +64,10 @@ public class TokenService {
         String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         try {
             Claims claims = getAllClaimsFromToken(jwtToken);
-            return (UserRole) claims.get("role");
+            String roleString = claims.get("role", String.class);
+            return UserRole.valueOf(roleString);
         } catch (Exception ex){
-            throw new UnauthorizedAccessException("Invalid JWT token - " + ex.getMessage());
+            throw new UnauthorizedAccessException("Invalid JWT token - " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
     }
 

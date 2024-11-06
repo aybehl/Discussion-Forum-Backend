@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 public class ModerationRequestDTO {
     private ReportStatus action;
-    private Long moderatorId;
     private String deletedReason;
 }

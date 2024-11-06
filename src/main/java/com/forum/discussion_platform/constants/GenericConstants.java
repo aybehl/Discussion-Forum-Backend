@@ -52,6 +52,7 @@ public class GenericConstants {
     public static final String UNAUTHORISED_COMMENT_UPDATE = "You can only edit your own comments";
 
     public static final String INVALID_CONTENT_FOR_ANSWER = "Answer content must not be empty";
+    public static final String INVALID_CONTENT_FOR_REPORTED_CONTENT = "Reported content body missing fields";
     public static final String INVALID_CONTENT_FOR_COMMENT = "Comment content must not be empty";
     public static final String INVALID_CONTENT_FOR_QUESTION = "Question content (title, body) must not be empty";
 
@@ -81,4 +82,7 @@ public class GenericConstants {
 
     public static final String REASON_REQUIRED_FOR_VERIFICATION = "Reason required for verifying reported content";
 
+    public static final String INCORRECT_REPORT_STATUS = "Incorrect report status";
+
+    public static final String REPORT_ALREADY_MODERATED = "Report already moderated";
 }

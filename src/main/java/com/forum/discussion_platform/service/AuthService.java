@@ -48,7 +48,7 @@ public class AuthService {
                     .build();
             userRepository.save(newUser);
 
-            String jwt = tokenService.generateToken(newUser.getUserId(), UserRole.USER);
+            String jwt = tokenService.generateToken(newUser.getUserId(), newUser.getRole());
             return new AuthResponseDTO(jwt, newUser.getUserId());
         }
     }

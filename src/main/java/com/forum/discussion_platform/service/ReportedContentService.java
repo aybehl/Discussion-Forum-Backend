@@ -7,6 +7,7 @@ import com.forum.discussion_platform.dto.response.GetReportedContentResponseDTO;
 import com.forum.discussion_platform.dto.response.ReportedContentResponseDTO;
 import com.forum.discussion_platform.enums.ContentType;
 import com.forum.discussion_platform.enums.ReportStatus;
+import com.forum.discussion_platform.exception.ContentAlreadyModeratedException;
 import com.forum.discussion_platform.exception.ResourceNotFoundException;
 import com.forum.discussion_platform.model.ReportedContent;
 import com.forum.discussion_platform.model.User;
@@ -41,6 +42,11 @@ public class ReportedContentService {
     public ReportedContentResponseDTO createReport(ReportedContentRequestDTO requestDTO, Long userId) {
         User reportedBy = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
+
+        if(requestDTO.getContentType() == null || requestDTO.getContentId() == null
+            || requestDTO.getReason() == null){
+            throw new IllegalArgumentException(GenericConstants.INVALID_CONTENT_FOR_REPORTED_CONTENT);
+        }
 
         ReportedContent reportedContent = new ReportedContent();
         reportedContent.setContentType(requestDTO.getContentType());
@@ -109,8 +115,13 @@ public class ReportedContentService {
         User moderator = userRepository.findById(moderatorId)
                 .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
 
+        if(reportedContent.getStatus() != null && reportedContent.getStatus() != ReportStatus.PENDING){
+            throw new ContentAlreadyModeratedException(GenericConstants.REPORT_ALREADY_MODERATED);
+        }
+
         reportedContent.setModerator(moderator);
         reportedContent.setReviewedAt(LocalDateTime.now());
+
 
         if (requestDTO.getAction() == ReportStatus.VERIFIED) {
             if (requestDTO.getDeletedReason() == null || requestDTO.getDeletedReason().isEmpty()) {
@@ -122,7 +133,7 @@ public class ReportedContentService {
         } else if (requestDTO.getAction() == ReportStatus.DISMISSED) {
             reportedContent.setStatus(ReportStatus.DISMISSED);
         } else {
-            throw new IllegalArgumentException(GenericConstants.REPORTED_CONTENT_NOT_FOUND);
+            throw new IllegalArgumentException(GenericConstants.INCORRECT_REPORT_STATUS);
         }
 
         reportedContentRepository.save(reportedContent);
@@ -131,7 +142,7 @@ public class ReportedContentService {
     private void handleModeratedContent(ReportedContent reportedContent, String deletedReason) {
         ContentType contentType = reportedContent.getContentType();
         Long contentId = reportedContent.getContentId();
-        Long moderatorId = reportedContent.getReportedBy().getUserId();
+        Long moderatorId = reportedContent.getModerator().getUserId();
 
         switch (contentType) {
             case QUESTION:
