@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,7 +83,11 @@ public class QuestionServiceImpl implements QuestionService {
 
             Question savedQuestion = questionRepository.save(question);
 
-            List<Media> mediaList = mediaService.processAndSaveMediaFiles(mediaFiles, savedQuestion.getQuestionId(), ContentType.QUESTION);
+            List<Media> mediaList = null;
+            if(mediaFiles != null && mediaFiles.size() > 0){
+                mediaList = mediaService.processAndSaveMediaFiles(mediaFiles, savedQuestion.getQuestionId(), ContentType.QUESTION);
+            }
+
             return DTOMapper.mapToQuestionResponseDTOWithMedia(savedQuestion, mediaList);
         } catch(Exception ex){
             // Rollback transaction if media upload fails
@@ -110,12 +115,20 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setBody(requestDTO.getBody());
             }
 
-            List<Tag> updatedTags = tagService.manageTagsForQuestion(requestDTO.getTagsToDelete(),
-                    requestDTO.getNewTagIds(), question.getTags());
+            List<Tag> updatedTags = new ArrayList<>(tagService.manageTagsForQuestion(
+                    requestDTO.getNewTagIds(),
+                    requestDTO.getTagsToDelete(),
+                    question.getTags()
+            ));
 
+            //Clear existing tag associations
+            question.getTags().clear();
+            questionRepository.save(question);
+
+            //Add new tag associations
             question.setTags(updatedTags);
-
             Question savedQuestion = questionRepository.save(question);
+
 
             List<Media> updatedMedia = mediaService.manageMedia(requestDTO.getMediaToDelete(), newMediaFiles, question.getQuestionId(), ContentType.QUESTION);
             return DTOMapper.mapToQuestionResponseDTOWithMedia(savedQuestion, updatedMedia);

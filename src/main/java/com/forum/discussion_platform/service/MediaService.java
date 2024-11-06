@@ -44,12 +44,18 @@ public class MediaService {
 
     public List<Media> manageMedia(List<Long> mediaIdsToDelete,
                              List<MultipartFile> newMediaFiles, Long contentId, ContentType contentType) {
-        // Delete specified media
-        List<Media> mediaToRemove = mediaRepository.findAllById(mediaIdsToDelete);
-        mediaRepository.deleteAll(mediaToRemove);
+
+        if(mediaIdsToDelete != null && mediaIdsToDelete.size() > 0){
+            // Delete specified media
+            List<Media> mediaToRemove = mediaRepository.findAllById(mediaIdsToDelete);
+            deleteMedia(mediaToRemove);
+        }
 
         List<Media> existingMediaList = mediaRepository.findByContentIdAndContentType(contentId, contentType);
-        List<Media> newMediaList = processAndSaveMediaFiles(newMediaFiles, contentId, contentType);
+        List<Media> newMediaList = null;
+        if(newMediaFiles != null && newMediaFiles.size() > 0){
+            newMediaList = processAndSaveMediaFiles(newMediaFiles, contentId, contentType);
+        }
 
         //Merge the two Lists
         return ListUtil.mergeLists(newMediaList, existingMediaList);

@@ -35,7 +35,7 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<SuccessResponseDTO<CreateOrEditQuestionResponseDTO>> createQuestion(@RequestPart("data") QuestionRequestDTO requestDTO,
-                                                                                              @RequestPart("mediaFiles") List<MultipartFile> mediaFiles,
+                                                                                              @RequestPart(value = "mediaFiles", required = false) List<MultipartFile> mediaFiles,
                                                                                               @RequestHeader("Authorization") String token){
         Long authorId = tokenService.getUserIdFromToken(token);
 

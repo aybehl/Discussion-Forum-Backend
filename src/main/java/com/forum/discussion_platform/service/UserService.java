@@ -67,6 +67,7 @@ public class UserService {
 
             return DTOMapper.mapToUserProfileDTO(user);
         } catch(Exception ex){
+            System.out.println("Exception - " +  ex);
             // Rollback transaction if media upload fails
             throw new RuntimeException(ex);
         }

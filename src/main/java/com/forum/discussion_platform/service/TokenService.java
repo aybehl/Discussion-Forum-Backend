@@ -1,6 +1,7 @@
 package com.forum.discussion_platform.service;
 
 import com.forum.discussion_platform.enums.UserRole;
+import com.forum.discussion_platform.exception.UnauthorizedAccessException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -49,26 +50,38 @@ public class TokenService {
 
     // Extract user ID from token
     public Long getUserIdFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return Long.parseLong(claims.get("userId").toString());
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        try {
+            Claims claims = getAllClaimsFromToken(jwtToken);
+            return Long.parseLong(claims.get("userId").toString());
+        } catch (Exception ex){
+            throw new UnauthorizedAccessException("Invalid JWT token - " + ex.getMessage());
+        }
     }
 
     // Extract user role from token
     public UserRole getUserRoleFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return (UserRole) claims.get("role");
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        try {
+            Claims claims = getAllClaimsFromToken(jwtToken);
+            return (UserRole) claims.get("role");
+        } catch (Exception ex){
+            throw new UnauthorizedAccessException("Invalid JWT token - " + ex.getMessage());
+        }
     }
 
     // Method to check if the token has expired
     public boolean isTokenExpired(String token) {
-        Date expiration = getAllClaimsFromToken(token).getExpiration();
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        Date expiration = getAllClaimsFromToken(jwtToken).getExpiration();
         return expiration.before(new Date());
     }
 
     // Method to validate token
     public boolean validateToken(String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         try {
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwtToken);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false; // token is invalid
@@ -77,11 +90,12 @@ public class TokenService {
 
     // Retrieve all claims for a token
     private Claims getAllClaimsFromToken(String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         return Jwts
                 .parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
-                .parseClaimsJws(token)
+                .parseClaimsJws(jwtToken)
                 .getBody();
     }
 }

@@ -11,5 +11,4 @@ public class QuestionRequestDTO {
     private String title;
     private String body;
     private List<Long> tagIds;
-    private List<String> mediaUrls;
 }

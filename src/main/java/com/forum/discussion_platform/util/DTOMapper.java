@@ -16,7 +16,10 @@ public class DTOMapper {
         responseDTO.setAuthorId(question.getAuthor().getUserId());
         responseDTO.setCreatedAt(question.getCreatedAt());
         responseDTO.setUpdatedAt(question.getUpdatedAt());
-        responseDTO.setMediaUrls(mediaList.stream().map(Media::getMediaUrl).collect(Collectors.toList()));
+
+        if(mediaList != null){
+            responseDTO.setMediaUrls(mediaList.stream().map(Media::getMediaUrl).collect(Collectors.toList()));
+        }
 
         return responseDTO;
     }

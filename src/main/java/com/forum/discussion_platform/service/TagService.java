@@ -29,7 +29,7 @@ public class TagService {
         List<Object[]> result = tagRepository.findTagsWithQuestionCount();
 
         return result.stream()
-                .map(row -> new TagQuestionCountResponseDTO((Long) row[0], (String) row[1], (int) row[2]))
+                .map(row -> new TagQuestionCountResponseDTO((Long) row[0], (String) row[1], (Long) row[2]))
                 .collect(Collectors.toList());
     }
 

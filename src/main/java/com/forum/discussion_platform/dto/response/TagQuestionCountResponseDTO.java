@@ -8,5 +8,5 @@ import lombok.Data;
 public class TagQuestionCountResponseDTO {
     private Long tagId;
     private String tagName;
-    private int questionCount;
+    private Long questionCount;
 }
