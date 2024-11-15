@@ -1,7 +1,8 @@
 package com.forum.discussion_platform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forum.discussion_platform.constants.GenericConstants;
-import com.forum.discussion_platform.dto.request.EditQuestionRequestDTO;
 import com.forum.discussion_platform.dto.request.EditUserProfileRequestDTO;
 import com.forum.discussion_platform.dto.response.SuccessResponseDTO;
 import com.forum.discussion_platform.dto.response.UserProfileResponseDTO;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -43,9 +42,12 @@ public class UserController {
     @PutMapping("/{userId}/profile")
     public ResponseEntity<SuccessResponseDTO<UserProfileResponseDTO>> editUserProfile(
             @RequestHeader("Authorization") String token,
-            @RequestPart("data") EditUserProfileRequestDTO request,
-            @RequestPart(value = "profilePicFile", required = false) MultipartFile profilePic) {
+            @RequestParam("data") String data,
+            @RequestPart(value = "profilePicFile", required = false) MultipartFile profilePic) throws JsonProcessingException {
         Long userId = tokenService.getUserIdFromToken(token);
+
+        // Parse JSON data into EditUserProfileRequestDTO
+        EditUserProfileRequestDTO request = new ObjectMapper().readValue(data, EditUserProfileRequestDTO.class);
 
         UserProfileResponseDTO updatedProfile = userService.editUserProfile(userId, request, profilePic);
         return new ResponseEntity<>(new SuccessResponseDTO<>(
@@ -55,6 +57,7 @@ public class UserController {
                 GenericConstants.USER_PROFILE_UPDATED_SUCCESSFULLY),
                 HttpStatus.OK);
     }
+
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<SuccessResponseDTO<String>> deleteUser(

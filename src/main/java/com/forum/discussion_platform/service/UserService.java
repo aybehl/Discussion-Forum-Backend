@@ -42,16 +42,16 @@ public class UserService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new ResourceNotFoundException(GenericConstants.USER_NOT_FOUND));
 
-            if (request.getUserName() != null) {
+            if (request.getUserName() != null && !request.getUserName().trim().isEmpty()) {
                 user.setUserName(request.getUserName());
             }
-            if (request.getFirstName() != null) {
+            if (request.getFirstName() != null && !request.getFirstName().trim().isEmpty()) {
                 user.setFirstName(request.getFirstName());
             }
-            if (request.getLastName() != null) {
+            if (request.getLastName() != null && !request.getLastName().trim().isEmpty()) {
                 user.setLastName(request.getLastName());
             }
-            if (request.getBio() != null) {
+            if (request.getBio() != null && !request.getBio().trim().isEmpty()) {
                 user.setBio(request.getBio());
             }
 
