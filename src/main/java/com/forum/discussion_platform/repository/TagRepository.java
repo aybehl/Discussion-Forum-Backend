@@ -9,9 +9,10 @@ import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    @Query("SELECT t.tagId, t.name, COUNT(q.questionId) " +
+    @Query("SELECT t.tagId, t.name, COUNT(q.questionId) AS questionCount " +
             "FROM Tag t LEFT JOIN t.questions q " +
-            "GROUP BY t.tagId, t.name")
+            "GROUP BY t.tagId, t.name " +
+            "ORDER BY questionCount DESC")
     List<Object[]> findTagsWithQuestionCount();
 
     @Query("SELECT t FROM Tag t JOIN t.questions q WHERE q.questionId = :questionId")

@@ -1,5 +1,7 @@
 package com.forum.discussion_platform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forum.discussion_platform.dto.request.EditQuestionRequestDTO;
 import com.forum.discussion_platform.dto.response.GetDetailedQuestionResponseDTO;
 import com.forum.discussion_platform.dto.response.GetQuestionResponseDTO;
@@ -34,10 +36,12 @@ public class QuestionController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<CreateOrEditQuestionResponseDTO>> createQuestion(@RequestPart("data") QuestionRequestDTO requestDTO,
+    public ResponseEntity<SuccessResponseDTO<CreateOrEditQuestionResponseDTO>> createQuestion(@RequestParam("data") String data,
                                                                                               @RequestPart(value = "mediaFiles", required = false) List<MultipartFile> mediaFiles,
-                                                                                              @RequestHeader("Authorization") String token){
+                                                                                              @RequestHeader("Authorization") String token) throws JsonProcessingException {
         Long authorId = tokenService.getUserIdFromToken(token);
+
+        QuestionRequestDTO requestDTO = new ObjectMapper().readValue(data, QuestionRequestDTO.class);
 
         CreateOrEditQuestionResponseDTO createOrEditQuestionResponseDTO = questionService.createQuestion(requestDTO, mediaFiles, authorId);
 

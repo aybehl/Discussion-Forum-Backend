@@ -6,6 +6,7 @@ import com.forum.discussion_platform.model.Tag;
 import com.forum.discussion_platform.repository.TagRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ public class TagService {
 
         return tagList.stream()
                 .map(tag -> new TagResponseDTO(tag.getTagId(), tag.getName(), tag.getDescription()))
+                .sorted(Comparator.comparing(TagResponseDTO::getTagName))
                 .collect(Collectors.toList());
     }
 
@@ -38,15 +40,15 @@ public class TagService {
     public List<Tag> manageTagsForQuestion(List<Long> newTagIds, List<Long> tagIdsToDelete, List<Tag> currentTagList){
 
         //Remove tags to delete
-        if(tagIdsToDelete != null && tagIdsToDelete.size() > 0){
+        if(tagIdsToDelete != null && !tagIdsToDelete.isEmpty()){
             List<Tag> tagsToRemove = currentTagList.stream()
                     .filter(tag -> tagIdsToDelete.contains(tag.getTagId()))
-                    .collect(Collectors.toList());
+                    .toList();
             currentTagList.removeAll(tagsToRemove);
         }
 
         //Add new tags
-        if(newTagIds != null && newTagIds.size() > 0){
+        if(newTagIds != null && !newTagIds.isEmpty()){
             List<Tag> tagsToAdd = tagRepository.findAllById(newTagIds);
             currentTagList.addAll(tagsToAdd);
         }
