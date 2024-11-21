@@ -235,7 +235,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         Optional<List<Media>> mediaList = mediaService.findByContentIdAndType(questionId, ContentType.QUESTION);
 
-        Optional<List<Media>> authorProfilePic = mediaService.findByContentIdAndType(question.getAuthor().getUserId(), ContentType.USER_PROFILE);
+        Optional<List<Media>> questionAuthorProfilePic = mediaService.findByContentIdAndType(question.getAuthor().getUserId(), ContentType.USER_PROFILE);
 
         // Prepare answer DTOs with votes and comments
         List<GetDetailedAnswerResponseDTO> answerResponseDTOs = question.getAnswers().stream().map(answer -> {
@@ -244,15 +244,17 @@ public class QuestionServiceImpl implements QuestionService {
             // Prepare comment DTOs with votes
             List<GetDetailedCommentResponseDTO> commentResponseDTOs = answer.getComments().stream().map(comment -> {
                 String commentUserVote = voteService.getUserVoteType(comment.getCommentId(), userId, ContentType.COMMENT);
-                return DTOMapper.mapToDetailedCommentResponseDTO(comment, commentUserVote);
+                Optional<List<Media>> commentAuthorProfilePic = mediaService.findByContentIdAndType(comment.getCommentedBy().getUserId(), ContentType.USER_PROFILE);
+                return DTOMapper.mapToDetailedCommentResponseDTO(comment, commentUserVote, commentAuthorProfilePic);
             }).collect(Collectors.toList());
 
+            Optional<List<Media>> answerAuthorProfilePic = mediaService.findByContentIdAndType(answer.getAnsweredBy().getUserId(), ContentType.USER_PROFILE);
             // Map answer, including votes and comments
-            return DTOMapper.mapToDetailedAnswerResponseDTO(answer, answerUserVote, commentResponseDTOs);
+            return DTOMapper.mapToDetailedAnswerResponseDTO(answer, answerUserVote, commentResponseDTOs, answerAuthorProfilePic);
         }).collect(Collectors.toList());
 
         // Map the question with the answers
-        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, mediaList, answerResponseDTOs, authorProfilePic);
+        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, mediaList, answerResponseDTOs, questionAuthorProfilePic);
     }
 
     public void updateVoteCount(Long questionId, VoteType voteType, int increment) {

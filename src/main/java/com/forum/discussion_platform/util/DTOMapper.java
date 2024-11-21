@@ -84,7 +84,11 @@ public class DTOMapper {
                 .build();
     }
 
-    public static GetDetailedAnswerResponseDTO mapToDetailedAnswerResponseDTO(Answer answer, String userVoteType, List<GetDetailedCommentResponseDTO> comments){
+    public static GetDetailedAnswerResponseDTO mapToDetailedAnswerResponseDTO(
+            Answer answer,
+            String userVoteType,
+            List<GetDetailedCommentResponseDTO> comments,
+            Optional<List<Media>> authorProfilePic){
         return GetDetailedAnswerResponseDTO.builder()
                 .answerId(answer.getAnswerId())
                 .body(answer.getBody())
@@ -92,6 +96,10 @@ public class DTOMapper {
                 .author(UserResponseDTO.builder()
                         .userId(answer.getAnsweredBy().getUserId())
                         .username(answer.getAnsweredBy().getUserName())
+                        .profilePic(authorProfilePic.flatMap(list -> list.stream().findFirst()
+                                .map(media -> new MediaResponseDTO(
+                                        media.getMediaId(),
+                                        media.getMediaUrl()))))
                         .build())
                 .votes(mapToVoteResponse(answer.getUpvotes(), answer.getDownvotes(), userVoteType))
                 .comments(comments)
@@ -100,7 +108,10 @@ public class DTOMapper {
                 .build();
     }
 
-    public static GetDetailedCommentResponseDTO mapToDetailedCommentResponseDTO(Comment comment, String commentUserVote){
+    public static GetDetailedCommentResponseDTO mapToDetailedCommentResponseDTO(
+            Comment comment,
+            String commentUserVote,
+            Optional<List<Media>> authorProfilePic){
         return GetDetailedCommentResponseDTO.builder()
                 .commentId(comment.getCommentId())
                 .body(comment.getBody())
@@ -108,6 +119,10 @@ public class DTOMapper {
                 .author(UserResponseDTO.builder()
                         .userId(comment.getCommentedBy().getUserId())
                         .username(comment.getCommentedBy().getUserName())
+                        .profilePic(authorProfilePic.flatMap(list -> list.stream().findFirst()
+                                .map(media -> new MediaResponseDTO(
+                                        media.getMediaId(),
+                                        media.getMediaUrl()))))
                         .build())
                 .votes(mapToVoteResponse(comment.getUpvotes(), comment.getDownvotes(), commentUserVote))
                 .isDeleted(comment.isDeleted())
