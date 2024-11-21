@@ -235,6 +235,8 @@ public class QuestionServiceImpl implements QuestionService {
 
         Optional<List<Media>> mediaList = mediaService.findByContentIdAndType(questionId, ContentType.QUESTION);
 
+        Optional<List<Media>> authorProfilePic = mediaService.findByContentIdAndType(question.getAuthor().getUserId(), ContentType.USER_PROFILE);
+
         // Prepare answer DTOs with votes and comments
         List<GetDetailedAnswerResponseDTO> answerResponseDTOs = question.getAnswers().stream().map(answer -> {
             String answerUserVote = voteService.getUserVoteType(answer.getAnswerId(), userId, ContentType.ANSWER);
@@ -250,7 +252,7 @@ public class QuestionServiceImpl implements QuestionService {
         }).collect(Collectors.toList());
 
         // Map the question with the answers
-        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, mediaList, answerResponseDTOs);
+        return DTOMapper.mapToDetailedQuestionResponseDTO(question, questionUserVote, mediaList, answerResponseDTOs, authorProfilePic);
     }
 
     public void updateVoteCount(Long questionId, VoteType voteType, int increment) {

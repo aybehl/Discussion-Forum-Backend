@@ -51,7 +51,12 @@ public class DTOMapper {
                 .build();
     }
 
-    public static GetDetailedQuestionResponseDTO mapToDetailedQuestionResponseDTO(Question question, String userVoteType, Optional<List<Media>> mediaList, List<GetDetailedAnswerResponseDTO> answers){
+    public static GetDetailedQuestionResponseDTO mapToDetailedQuestionResponseDTO(
+            Question question,
+            String userVoteType,
+            Optional<List<Media>> mediaList,
+            List<GetDetailedAnswerResponseDTO> answers,
+            Optional<List<Media>> authorProfilePic){
         return GetDetailedQuestionResponseDTO.builder()
                 .questionId(question.getQuestionId())
                 .title(question.getTitle())
@@ -71,6 +76,10 @@ public class DTOMapper {
                 .author(UserResponseDTO.builder()
                         .userId(question.getAuthor().getUserId())
                         .username(question.getAuthor().getUserName())
+                        .profilePic(authorProfilePic.flatMap(list -> list.stream().findFirst()
+                                .map(media -> new MediaResponseDTO(
+                                        media.getMediaId(),
+                                        media.getMediaUrl()))))
                         .build())
                 .build();
     }
