@@ -51,11 +51,13 @@ public class QuestionController {
     @PutMapping("/{questionId}")
     public ResponseEntity<SuccessResponseDTO<CreateOrEditQuestionResponseDTO>> updateQuestion(
             @PathVariable Long questionId,
-            @RequestPart(value = "data", required = false) EditQuestionRequestDTO requestDTO,
+            @RequestParam("data") String data,
             @RequestPart(value = "newMediaFiles", required = false) List<MultipartFile> newMediaFiles,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("Authorization") String token) throws JsonProcessingException {
 
         Long authorId = tokenService.getUserIdFromToken(token);
+
+        EditQuestionRequestDTO requestDTO = new ObjectMapper().readValue(data, EditQuestionRequestDTO.class);
         CreateOrEditQuestionResponseDTO createOrEditQuestionResponseDTO = questionService.updateQuestion(questionId, requestDTO, newMediaFiles, authorId);
 
         return ResponseEntity.ok(new SuccessResponseDTO<>(ApiStatus.SUCCESS, createOrEditQuestionResponseDTO, HttpStatus.OK, GenericConstants.QUESTION_UPDATED_SUCCESSFULLY));

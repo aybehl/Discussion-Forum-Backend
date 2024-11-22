@@ -73,6 +73,8 @@ public class DTOMapper {
                 .answers(answers)
                 .createdAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())
+                .isDeleted(question.isDeleted())
+                .deletedReason(question.getDeletedReason())
                 .author(UserResponseDTO.builder()
                         .userId(question.getAuthor().getUserId())
                         .username(question.getAuthor().getUserName())
