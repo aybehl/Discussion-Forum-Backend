@@ -91,7 +91,7 @@ public class VoteService {
     }
 
     @Transactional
-    private void undoVote(Vote existingVote) {
+    protected void undoVote(Vote existingVote) {
         try {
             VoteRequestDTO request = VoteRequestDTO.builder()
                     .votedById(existingVote.getVotedBy().getUserId())

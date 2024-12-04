@@ -238,11 +238,15 @@ public class QuestionServiceImpl implements QuestionService {
         Optional<List<Media>> questionAuthorProfilePic = mediaService.findByContentIdAndType(question.getAuthor().getUserId(), ContentType.USER_PROFILE);
 
         // Prepare answer DTOs with votes and comments
-        List<GetDetailedAnswerResponseDTO> answerResponseDTOs = question.getAnswers().stream().map(answer -> {
+        List<GetDetailedAnswerResponseDTO> answerResponseDTOs = question.getAnswers().stream()
+                .sorted((a1, a2) -> a2.getCreatedAt().compareTo(a1.getCreatedAt()))
+                .map(answer -> {
             String answerUserVote = voteService.getUserVoteType(answer.getAnswerId(), userId, ContentType.ANSWER);
 
             // Prepare comment DTOs with votes
-            List<GetDetailedCommentResponseDTO> commentResponseDTOs = answer.getComments().stream().map(comment -> {
+            List<GetDetailedCommentResponseDTO> commentResponseDTOs = answer.getComments().stream()
+                    .sorted((c1, c2) -> c2.getCreatedAt().compareTo(c1.getCreatedAt()))
+                    .map(comment -> {
                 String commentUserVote = voteService.getUserVoteType(comment.getCommentId(), userId, ContentType.COMMENT);
                 Optional<List<Media>> commentAuthorProfilePic = mediaService.findByContentIdAndType(comment.getCommentedBy().getUserId(), ContentType.USER_PROFILE);
                 return DTOMapper.mapToDetailedCommentResponseDTO(comment, commentUserVote, commentAuthorProfilePic);
