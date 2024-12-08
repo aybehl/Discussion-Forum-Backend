@@ -1,5 +1,5 @@
 # Use a Maven image to build the JAR
-FROM maven:3.8.7-openjdk-17 AS build
+FROM maven:3.8.5-openjdk-17 AS build
 
 # Set the working directory in the container
 WORKDIR /app
@@ -20,7 +20,7 @@ WORKDIR /app
 # Copy the built JAR file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the application port (update if necessary)
+# Expose the application port
 EXPOSE 8080
 
 # Run the application
